@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'expenseTracker',
 ]
 
@@ -51,6 +52,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'mysite.urls'
+
+AUTH_USER_MODEL = 'expenseTracker.User'
+
 
 TEMPLATES = [
     {
