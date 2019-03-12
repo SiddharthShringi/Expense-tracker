@@ -6,8 +6,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import (UserSerializer, LoginSerializer, RegistrationSerializer, CategorySerializer)
-from .models import Category
+from .serializers import (ExpenseSerializer, IncomeSerializer, UserSerializer, LoginSerializer, RegistrationSerializer, CategorySerializer)
+from .models import Category, Expense, Income
 from .renderers import UserJSONRenderer
 
 
@@ -87,3 +87,26 @@ class CategoryViewsets(viewsets.ModelViewSet):
         return self.queryset.filter(user=self.request.user) | self.queryset.filter(default=True)
 
 
+class ExpenseViewsets(viewsets.ModelViewSet):
+    queryset = Expense.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ExpenseSerializer
+
+    def perform_create(self, serializer):
+        return serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+
+
+class IncomeViewsets(viewsets.ModelViewSet):
+    queryset = Income.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = IncomeSerializer
+
+    def perform_create(self, serializer):
+        return serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
