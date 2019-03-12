@@ -116,7 +116,6 @@ class Category(BaseModel):
 
 
 class Income(BaseModel):
-    date = models.DateField(auto_now_add=True, editable=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     amount = models.IntegerField()
     note = models.CharField(max_length=500)
