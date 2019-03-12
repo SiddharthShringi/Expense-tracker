@@ -9,57 +9,6 @@ from django.contrib.auth.models import (
 from django.db import models
 
 # Create your models here.
-
-
-class Category(models.Model):
-    CATEGORY_TYPE = (
-        ('Income', 'Income'),
-        ('Expense', 'Expense')
-    )
-    name = models.CharField(max_length=30)
-    type = models.CharField(max_length=10, choices=CATEGORY_TYPE)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Category'
-        verbose_name_plural = 'Categories'
-
-
-class Income(models.Model):
-    date = models.DateField(auto_now_add=True, editable=False)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    amount = models.IntegerField()
-    note = models.CharField(max_length=500)
-
-    def __str__(self):
-        return f"{self.category} - {self.amount}"
-
-    class Meta:
-        verbose_name = 'Income'
-        verbose_name_plural = 'All Income'
-
-
-class Expense(models.Model):
-    EXPENSE_TYPE = (
-        ('Fixed', 'Fixed'),
-        ('Variable', 'Variable')
-    )
-    date = models.DateField(auto_now_add=True, editable=False)
-    expense_type = models.CharField(max_length=100, choices=EXPENSE_TYPE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    amount = models.IntegerField()
-    note = models.CharField(max_length=500)
-
-    def __str__(self):
-        return f"{self.category} - {self.amount}"
-
-    class Meta:
-        verbose_name = 'Expense'
-        verbose_name_plural = 'All Expenses'
-
-
 class UserManager(BaseUserManager):
     """Override create_user and create_superuser function to create user objects"""
 
@@ -140,4 +89,63 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         return token.decode('utf-8')
 
-    
+#models class for creating timestamp
+class BaseModel(models.Model):
+    created_date = models.DateTimeField(auto_now_add=True, editable=False)
+    modified_date = models.DateTimeField(auto_now=True, editable=False)
+
+    class Meta:
+        abstract = True
+
+class Category(BaseModel):
+    CATEGORY_TYPE = (
+        ('Income', 'Income'),
+        ('Expense', 'Expense')
+    )
+    default = models.BooleanField(default=False)
+    name = models.CharField(max_length=30)
+    type = models.CharField(max_length=10, choices=CATEGORY_TYPE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
+
+
+class Income(BaseModel):
+    date = models.DateField(auto_now_add=True, editable=False)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    amount = models.IntegerField()
+    note = models.CharField(max_length=500)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+    def __str__(self):
+        return f"{self.category} - {self.amount}"
+
+    class Meta:
+        verbose_name = 'Income'
+        verbose_name_plural = 'All Income'
+
+
+class Expense(BaseModel):
+    EXPENSE_TYPE = (
+        ('Fixed', 'Fixed'),
+        ('Variable', 'Variable')
+    )
+    expense_type = models.CharField(max_length=100, choices=EXPENSE_TYPE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    amount = models.IntegerField()
+    note = models.CharField(max_length=500)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+    def __str__(self):
+        return f"{self.category} - {self.amount}"
+
+    class Meta:
+        verbose_name = 'Expense'
+        verbose_name_plural = 'All Expenses'

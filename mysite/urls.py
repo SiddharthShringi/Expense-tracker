@@ -15,8 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from rest_framework.routers import DefaultRouter
+
+from expenseTracker.views import CategoryViewsets
+
+router = DefaultRouter()
+router.register('category', CategoryViewsets)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('expenseTracker.urls', namespace='expenseTracker')),
+    path('api/', include(router.urls)),
 ]
