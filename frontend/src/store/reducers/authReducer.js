@@ -1,11 +1,12 @@
 const initState = {
   username: null,
-  email: null,
-  token: null
+	email: null,
 };
 
 const authReducer = (state = initState, action) => {
 	switch(action.type){
+		case "SIGNUP_SUCCESS":
+			return {...state, username:action.username, email:action.email}
 		default:
 		return state
 	}
