@@ -7,7 +7,8 @@ class SignUp extends Component {
   state = {
     username: "",
     email: "",
-    password: ""
+		password: "",
+		error: {}
   };
 
   handleChange = e => {
@@ -18,10 +19,26 @@ class SignUp extends Component {
 	
 	handleSubmit = e => {
 		e.preventDefault()
-		this.props.signUp(this.state)
+		var {username, email, password} = this.state;
+		var user = {
+			username,
+			email,
+			password
+		}
+		this.props.dispatch(signUp(user, (response, err) => {
+			if (response){
+				console.log('success')
+				// this.props.history.push(/)
+			} else {
+				this.setState({
+					error: err
+				})
+			}
+		}))
 	}
 
   render() {
+		const {error} = this.state
     return (
       <div className="signUp">
         <form onSubmit={this.handleSubmit}>
@@ -44,9 +61,11 @@ class SignUp extends Component {
 
 					<div>
 						<button>Signup</button>
-						{/* <div className="error">
-							{authError ? <p>{authError}</p> : null}
-						</div> */}
+						<div className="error">
+							{error.username ? <p>Username: {error.username[0]}</p> : null}
+							{error.email ? <p>Email: {error.email[0]}</p> : null}
+							{error.password ? <p>Password: {error.password[0]}</p> : null}
+						</div>
 					</div>
         </form>
       </div>
@@ -54,10 +73,10 @@ class SignUp extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-	return {
-		signUp: newUser => dispatch(signUp(newUser))
-	}
-}
+// const mapDispatchToProps = (dispatch) => {
+// 	return {
+// 		signUp: newUser => dispatch(signUp(newUser))
+// 	}
+// }
 
-export default connect(null, mapDispatchToProps)(SignUp);
+export default connect()(SignUp);
