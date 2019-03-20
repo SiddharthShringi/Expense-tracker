@@ -8,7 +8,7 @@ class SignIn extends Component {
   state = {
     email: "",
     password: "",
-    error: {}
+    errors: {}
   };
 
   handleChange = e => {
@@ -24,10 +24,23 @@ class SignIn extends Component {
       email,
       password
     };
-    this.props.dispatch(singIn(user));
+    this.props.dispatch(singIn(user, (response, err) => {
+			if(response) {
+				this.setState({
+          email: null,
+          password: null,
+          errors: {}
+        })
+			} else {
+				this.setState({
+					errors: err
+				})
+			}
+		}));
   };
 
   render() {
+		const {errors} = this.state
     return (
       <div className="signIn">
         <form onSubmit={this.handleSubmit}>
@@ -45,7 +58,9 @@ class SignIn extends Component {
 
           <div>
             <button>SignIn</button>
-            <div className="error" />
+            <div className="error-message">
+							{errors.error ? <p>oops! {errors.error[0]}</p> : null}
+						</div>
           </div>
         </form>
       </div>
