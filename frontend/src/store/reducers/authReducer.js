@@ -9,13 +9,9 @@ const authReducer = (state = initState, action) => {
       return { ...state, username: action.username, email: action.email };
 
 		case "LOGIN_SUCCESS":
-		console.log("in red lin");
-		
       return { ...state, email: action.email };
 
 		case "SIGNOUT_USER":
-			console.log("in red sout");
-			
 			return {...state, username:null, email:null}
 
     default:
