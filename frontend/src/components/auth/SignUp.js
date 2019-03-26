@@ -28,13 +28,13 @@ class SignUp extends Component {
 		this.props.dispatch(signUp(user, (response, err) => {
 			if (response){
 				console.log('success')
-				// this.props.history.push(/)
 			} else {
 				this.setState({
 					error: err
 				})
 			}
 		}))
+		this.props.history.push('/')
 	}
 
   render() {

@@ -36,7 +36,8 @@ class SignIn extends Component {
 					errors: err
 				})
 			}
-		}));
+    }));
+    this.props.history.push('/');
   };
 
   render() {
