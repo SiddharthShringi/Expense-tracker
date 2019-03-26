@@ -1,6 +1,6 @@
 import jwt
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from django.conf import settings
 from django.contrib.auth.models import (
@@ -116,9 +116,10 @@ class Category(BaseModel):
 
 
 class Income(BaseModel):
+    date = models.DateField(default=date.today)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     amount = models.IntegerField()
-    note = models.CharField(max_length=500)
+    note = models.CharField(max_length=500, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
@@ -135,10 +136,11 @@ class Expense(BaseModel):
         ('Fixed', 'Fixed'),
         ('Variable', 'Variable')
     )
+    date = models.DateField(default=date.today)
     expense_type = models.CharField(max_length=100, choices=EXPENSE_TYPE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     amount = models.IntegerField()
-    note = models.CharField(max_length=500)
+    note = models.CharField(max_length=500, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 

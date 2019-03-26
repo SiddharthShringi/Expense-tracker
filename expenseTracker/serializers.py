@@ -11,6 +11,12 @@ class IncomeSerializer(serializers.ModelSerializer):
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(
+        source='user.email'
+    )
+    category = serializers.ReadOnlyField(
+        source='category.name'
+    )
     class Meta:
         model = Expense
         fields = '__all__'
