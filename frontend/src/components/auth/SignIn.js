@@ -31,13 +31,13 @@ class SignIn extends Component {
           password: null,
           errors: {}
         })
+        this.props.history.push('/');
 			} else {
 				this.setState({
 					errors: err
 				})
 			}
     }));
-    this.props.history.push('/');
   };
 
   render() {
