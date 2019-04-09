@@ -23,6 +23,9 @@ class ExpenseSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(
+        source='user.email'
+    )
     class Meta:
         model = Category
         fields = '__all__'
