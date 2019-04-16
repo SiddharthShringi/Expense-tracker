@@ -3,37 +3,85 @@ from rest_framework import serializers
 from .models import Income, Expense, Category, User
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(
+        source='user.email'
+    )
+
+    class Meta:
+        model = Category
+        fields = ('id', 'default', 'name', 'category_type', 'user')
+
+
 class IncomeSerializer(serializers.ModelSerializer):
-    
+    user = serializers.ReadOnlyField(
+        source='user.email'
+    )
+    category = CategorySerializer()
+
     class Meta:
         model = Income
-        fields = '__all__'
+        fields = ('id', 'date', 'category', 'amount', 'note', 'user')
+
+
+class IncomeCreateSerializer(serializers.Serializer):
+    '''Serializer for creating handling post request for Income'''
+
+    date = serializers.DateField()
+    category = serializers.CharField()
+    amount = serializers.IntegerField()
+    note = serializers.CharField()
+
+    def create(self, validated_data):
+        category = validated_data.pop('category')
+        user = None
+        request = self.context.get("request")
+        category_data = Category.objects.filter(name=category)[0]
+        instance = Income.objects.create(
+            **validated_data, category=category_data)
+        if request and hasattr(request, "user"):
+            user = request.user
+            instance.user = user
+
+        return instance
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(
         source='user.email'
     )
-    category = serializers.ReadOnlyField(
-        source='category.name'
-    )
+    category = CategorySerializer()
+
     class Meta:
         model = Expense
-        fields = '__all__'
+        fields = ('id', 'date', 'amount', 'expense_type',
+                  'category', 'note', 'user')
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(
-        source='user.email'
-    )
-    class Meta:
-        model = Category
-        fields = '__all__'
+class ExpenseCreateSerializer(serializers.Serializer):
+
+    date = serializers.DateField()
+    expense_type = serializers.CharField()
+    category = serializers.CharField()
+    note = serializers.CharField()
+    amount = serializers.IntegerField()
+
+    def create(self, validated_data):
+        print(validated_data)
+        category = validated_data.pop('category')
+        user = None
+        request = self.context.get("request")
+        category_data = Category.objects.filter(name=category)[0]
+        instance = Expense.objects.create(
+            **validated_data, category=category_data)
+        if request and hasattr(request, "user"):
+            user = request.user
+            print(user, "user")
+            instance.user = user
+        return instance
 
 
 # create a endpoint for registering a user
-
-
 
 class RegistrationSerializer(serializers.ModelSerializer):
     """Serializers registration requests and creates a new user."""
@@ -77,7 +125,7 @@ class LoginSerializer(serializers.Serializer):
         email = data.get('email', None)
         password = data.get('password', None)
 
-        # Raise an exception if an 
+        # Raise an exception if an
         # email is not provided
         if email is None:
             raise serializers.ValidationError(
@@ -90,7 +138,7 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'A password is required to log in'
             )
-        
+
         # The `authenticate` method is provided by Django and handles checking
         # for a user that matches this email/password combination. Notice how
         # we pass `email` as the `username` value since in our User
@@ -126,7 +174,7 @@ class LoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     """Handles serialization and deserialization of User objects."""
 
-    # Passwords must be at least 8 characters, but no more than 128 
+    # Passwords must be at least 8 characters, but no more than 128
     # characters. These values are the default provided by Django. We could
     # change them, but that would create extra work while introducing no real
     # benefit, so lets just stick with the defaults.
@@ -144,11 +192,10 @@ class UserSerializer(serializers.ModelSerializer):
         # specifying the field with `read_only=True` like we did for password
         # above. The reason we want to use `read_only_fields` here is that
         # we don't need to specify anything else about the field. The
-        # password field needed the `min_length` and 
+        # password field needed the `min_length` and
         # `max_length` properties, but that isn't the case for the token
         # field.
         read_only_fields = ('token',)
-
 
     def update(self, instance, validated_data):
         """Performs an update on a User."""

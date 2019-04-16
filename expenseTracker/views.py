@@ -1,3 +1,5 @@
+from .renderers import UserJSONRenderer
+from .models import Category, Expense, Income
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -6,9 +8,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import (ExpenseSerializer, IncomeSerializer, UserSerializer, LoginSerializer, RegistrationSerializer, CategorySerializer)
-from .models import Category, Expense, Income
-from .renderers import UserJSONRenderer
+from .serializers import (ExpenseSerializer, ExpenseCreateSerializer, IncomeSerializer, UserSerializer,
+                          LoginSerializer, RegistrationSerializer, CategorySerializer)
 
 
 class RegistrationAPIView(APIView):
@@ -47,7 +48,7 @@ class LoginAPIView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-        
+
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     renderer_classes = (UserJSONRenderer,)
@@ -75,38 +76,86 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CategoryViewsets(viewsets.ModelViewSet):
+class CategoryAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
     queryset = Category.objects.all()
+
+    def get(self, request):
+        categories = self.queryset.filter(
+            user=self.request.user) | self.queryset.filter(default=True)
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        data = request.data
+        serializer = CategorySerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExpenseAPIView(APIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = CategorySerializer
-
-    def perform_create(self, serializer):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-        return serializer.save(user=self.request.user)
-
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user) | self.queryset.filter(default=True)
-
-
-class ExpenseViewsets(viewsets.ModelViewSet):
     queryset = Expense.objects.all()
-    permission_classes = (IsAuthenticated,)
-    serializer_class = ExpenseSerializer
 
-    def perform_create(self, serializer):
-        return serializer.save(user=self.request.user)
+    def get(self, request):
+        expnese = self.queryset.filter(user=self.request.user)
+        serializer = ExpenseSerializer(expnese, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+    def post(self, request):
+        data = request.data
+        print(data, "fasfasdf")
+        data['expense_type'] = data['expenseType']
+        data.pop('expenseType')
+        write_serializer = ExpenseCreateSerializer(data=data)
+        if write_serializer.is_valid(raise_exception=True):
+            write_serializer.save(user = request.user)
+            return Response(write_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(write_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class IncomeAPIView(APIView):
+    permission_classes = (IsAuthenticated)
 
-class IncomeViewsets(viewsets.ModelViewSet):
-    queryset = Income.objects.all()
-    permission_classes = (IsAuthenticated,)
-    serializer_class = IncomeSerializer
+    def get():
+        pass
 
-    def perform_create(self, serializer):
-        return serializer.save(user=self.request.user)
+    def post():
+        pass
 
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+
+# class CategoryViewsets(viewsets.ModelViewSet):
+#     queryset = Category.objects.all()
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = CategorySerializer
+
+#     def perform_create(self, serializer):
+#         return serializer.save(user=self.request.user)
+
+#     def get_queryset(self):
+#         return self.queryset.filter(user=self.request.user) | self.queryset.filter(default=True)
+
+
+# class ExpenseViewsets(viewsets.ModelViewSet):
+#     queryset = Expense.objects.all()
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = ExpenseSerializer
+
+#     def perform_create(self, serializer):
+#         return serializer.save(user=self.request.user)
+
+#     def get_queryset(self):
+#         return self.queryset.filter(user=self.request.user)
+
+
+# class IncomeViewsets(viewsets.ModelViewSet):
+#     queryset = Income.objects.all()
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = IncomeSerializer
+
+#     def perform_create(self, serializer):
+#         return serializer.save(user=self.request.user)
+
+#     def get_queryset(self):
+#         return self.queryset.filter(user=self.request.user)

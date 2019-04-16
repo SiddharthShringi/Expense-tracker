@@ -9,6 +9,21 @@ from django.contrib.auth.models import (
 from django.db import models
 
 # Create your models here.
+
+# Choices Field
+
+# Category Choice Field
+CATEGORY_TYPE = (
+    ('Income', 'Income'),
+    ('Expense', 'Expense')
+)
+
+# Expense Choice Field
+EXPENSE_TYPE = (
+    ('Fixed', 'Fixed'),
+    ('Variable', 'Variable')
+)
+
 class UserManager(BaseUserManager):
     """Override create_user and create_superuser function to create user objects"""
 
@@ -98,14 +113,10 @@ class BaseModel(models.Model):
         abstract = True
 
 class Category(BaseModel):
-    CATEGORY_TYPE = (
-        ('Income', 'Income'),
-        ('Expense', 'Expense')
-    )
     default = models.BooleanField(default=False)
     name = models.CharField(max_length=30)
-    type = models.CharField(max_length=10, choices=CATEGORY_TYPE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category_type = models.CharField(max_length=10, choices=CATEGORY_TYPE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='categories')
 
     def __str__(self):
         return self.name
@@ -117,10 +128,10 @@ class Category(BaseModel):
 
 class Income(BaseModel):
     date = models.DateField(default=date.today)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='income')
     amount = models.IntegerField()
-    note = models.CharField(max_length=500, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    note = models.CharField(max_length=500, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='income')
 
 
     def __str__(self):
@@ -132,16 +143,12 @@ class Income(BaseModel):
 
 
 class Expense(BaseModel):
-    EXPENSE_TYPE = (
-        ('Fixed', 'Fixed'),
-        ('Variable', 'Variable')
-    )
     date = models.DateField(default=date.today)
     expense_type = models.CharField(max_length=100, choices=EXPENSE_TYPE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='expense')
     amount = models.IntegerField()
-    note = models.CharField(max_length=500, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    note = models.CharField(max_length=500, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expense')
 
 
     def __str__(self):
