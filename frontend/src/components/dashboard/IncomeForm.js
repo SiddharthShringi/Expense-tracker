@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { incomeDataAction } from "../../store/actions/incomeDataAction";
 
 class IncomeForm extends Component {
   constructor(props) {
@@ -13,15 +16,42 @@ class IncomeForm extends Component {
 
   handleChange = e => {
     this.setState({
-      [e.target.id]: e.target.value 
+      [e.target.id]: e.target.value
     });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    var { date, category, amount, note } = this.state;
+    var incomeData = {
+      date,
+      category,
+      amount,
+      note
+    };
+    console.log(incomeData, "IncomeForm");
+    this.props.dispatch(
+      incomeDataAction(incomeData, response => {
+        if (response) {
+          this.setState({
+            date: "",
+            category: "",
+            amount: "",
+            note: ""
+          });
+          this.props.history.push("/addExpense");
+        } else {
+          console.log("not happen");
+        }
+      })
+    );
   };
 
   render() {
     const { category } = this.props;
     return (
       <div className="income-form">
-        <form>
+        <form onSubmit={this.handleSubmit}>
           <div>
             <label htmlFor="data">Date</label>
             <input
@@ -79,4 +109,4 @@ class IncomeForm extends Component {
   }
 }
 
-export default IncomeForm;
+export default withRouter(connect()(IncomeForm));
