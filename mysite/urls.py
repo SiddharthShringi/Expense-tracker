@@ -17,15 +17,15 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from expenseTracker.views import CategoryViewsets, ExpenseViewsets, IncomeViewsets
+# from expenseTracker.views import CategoryViewsets, ExpenseViewsets, IncomeViewsets
 
-router = DefaultRouter()
-router.register('category', CategoryViewsets)
-router.register('expenses', ExpenseViewsets)
-router.register('income', IncomeViewsets)
+# router = DefaultRouter()
+# router.register('category', CategoryViewsets)
+# router.register('expenses', ExpenseViewsets)
+# router.register('income', IncomeViewsets)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('expenseTracker.urls', namespace='expenseTracker')),
-    path('api/', include(router.urls)),
+    # path('api/', include(router.urls)),
 ]
