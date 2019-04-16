@@ -38,7 +38,6 @@ class ExpenseForm extends Component {
       amount,
       note
     };
-    console.log(expenseData, "123")
     this.props.dispatch(
       expenseDataAction(expenseData, response => {
         if (response) {
@@ -49,7 +48,6 @@ class ExpenseForm extends Component {
             amount: "",
             note: ""
           });
-          console.log(this.history, 'expense form')
           this.props.history.push("/addExpense");
         } else {
           console.log("not happen");
