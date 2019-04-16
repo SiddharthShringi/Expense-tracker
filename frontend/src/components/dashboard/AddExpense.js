@@ -43,10 +43,10 @@ class AddExpense extends Component {
     console.log(categoryData);
     if (categoryData) {
       const incomeCategory = categoryData.filter(
-        category => category.type === "Income"
+        category => category.category_type === "Income"
       );
       const expenseCategory = categoryData.filter(
-        category => category.type === "Expense"
+        category => category.category_type === "Expense"
       );
 
       const { isExpenseClicked, isIncomeClicked } = this.state;

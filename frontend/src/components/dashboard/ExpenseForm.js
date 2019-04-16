@@ -1,14 +1,17 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { withRouter } from 'react-router-dom'
+
+import { expenseDataAction } from "../../store/actions/expenseDataAction";
 
 class ExpenseForm extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       date: "",
       expenseType: "Variable",
-      category: "",
-      amount: null,
+      category: (props.category) ? props.category[1].name : null,
+      amount: "",
       note: ""
     };
   }
@@ -25,14 +28,49 @@ class ExpenseForm extends Component {
     });
   };
 
+  handleSubmit = e => {
+    e.preventDefault();
+    var { date, expenseType, category, amount, note } = this.state;
+    var expenseData = {
+      date,
+      expenseType,
+      category,
+      amount,
+      note
+    };
+    console.log(expenseData, "123")
+    this.props.dispatch(
+      expenseDataAction(expenseData, response => {
+        if (response) {
+          this.setState({
+            date: "",
+            expenseType: "Variable",
+            category: "",
+            amount: "",
+            note: ""
+          });
+          console.log(this.history, 'expense form')
+          this.props.history.push("/addExpense");
+        } else {
+          console.log("not happen");
+        }
+      })
+    );
+  };
+
   render() {
     const { category } = this.props;
+    // if(!this.state.category){
+    //   this.setState({
+    //     category:category[0].name,
+    //   })
+    // }
     return (
       <div className="expense-form">
-        <form>
+        <form onSubmit={this.handleSubmit}>
           <div>
             <label htmlFor="data">Date</label>
-            <input type="date" id="expense-date" onChange={this.handleChange} />
+            <input value={this.state.date} type="date" id="date" onChange={this.handleChange} />
           </div>
 
           <div>
@@ -59,7 +97,7 @@ class ExpenseForm extends Component {
 
           <div>
             <label htmlFor="category">Category</label>
-            <select id="category" onChange={this.handleChange}>
+            <select id="category" onChange={this.handleChange} value={this.state.category} placeholder="Select Category">
               {category.map((obj, i) => {
                 return (
                   <option value={obj.name} key={i}>
@@ -75,7 +113,8 @@ class ExpenseForm extends Component {
             <input
               id="amount"
               type="number"
-              min="0"
+              // min='0'
+              value={this.state.amount}
               onChange={this.handleChange}
             />
           </div>
@@ -94,4 +133,4 @@ class ExpenseForm extends Component {
   }
 }
 
-export default connect()(ExpenseForm);
+export default withRouter(connect()(ExpenseForm));
