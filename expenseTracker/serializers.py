@@ -33,6 +33,7 @@ class IncomeCreateSerializer(serializers.Serializer):
     note = serializers.CharField()
 
     def create(self, validated_data):
+        print(validated_data, "Income serializer")
         category = validated_data.pop('category')
         user = None
         request = self.context.get("request")

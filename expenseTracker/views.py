@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import (ExpenseSerializer, ExpenseCreateSerializer, IncomeSerializer, UserSerializer,
+from .serializers import (ExpenseSerializer, ExpenseCreateSerializer, IncomeSerializer, IncomeCreateSerializer, UserSerializer,
                           LoginSerializer, RegistrationSerializer, CategorySerializer)
 
 
@@ -110,20 +110,28 @@ class ExpenseAPIView(APIView):
         data.pop('expenseType')
         write_serializer = ExpenseCreateSerializer(data=data)
         if write_serializer.is_valid(raise_exception=True):
-            write_serializer.save(user = request.user)
+            write_serializer.save(user=request.user)
             return Response(write_serializer.data, status=status.HTTP_201_CREATED)
         return Response(write_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class IncomeAPIView(APIView):
-    permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated,)
+    queryset = Income.objects.all()
 
-    def get():
-        pass
+    def get(self, request):
+        incomes = self.queryset.filter(user=self.request.user)
+        serializer = IncomeSerializer(incomes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post():
-        pass
-
+    def post(self, request):
+        data = request.data
+        print(data, "Income APIView")
+        write_serializer= IncomeCreateSerializer(data=data)
+        if write_serializer.is_valid(raise_exception=True):
+            write_serializer.save(user=request.user)
+            return Response(write_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(write_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # class CategoryViewsets(viewsets.ModelViewSet):
 #     queryset = Category.objects.all()
