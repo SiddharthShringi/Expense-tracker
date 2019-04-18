@@ -22,7 +22,7 @@ class SignedInLinks extends Component {
       <ul className="signedIn-links">
         <li><NavLink to='/addExpense'>Add Expense</NavLink></li>
         <li><a onClick={this.handleClick}>Sign Out</a></li>
-        <li>Dashboard</li>
+        <li><NavLink to='/dashboard'>Dashboard</NavLink></li>
       </ul>
     );
   }

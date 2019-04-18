@@ -4,6 +4,7 @@ import SignUp from '../src/components/auth/SignUp'
 import SignIn from '../src/components/auth/SignIn'
 import Home from '../src/components/layout/Home'
 import AddExpense from '../src/components/dashboard/AddExpense'
+import DataDashboard from '../src/components/DataDashboard'
 import './App.css';
 import Navbar from './components/layout/Navbar';
 
@@ -18,6 +19,7 @@ class App extends Component {
             <Route path='/signUp' component={SignUp} />
             <Route path='/signIn' component={SignIn} />
             <Route path='/addExpense' component={AddExpense} />
+            <Route path='/dashboard' component={DataDashboard} />
           </Switch>
         </div>
       </BrowserRouter>

@@ -11,15 +11,7 @@ class AddExpense extends Component {
     isExpenseClicked: true
   };
 
-  // handleClick = () => {
-  // 	this.setState({
-  // 		isIncomeClicked: !this.state.isIncomeClicked,
-  // 		isExpenseClicked: !this.state.isExpenseClicked
-  // 	})
-  // }
-
   componentDidMount() {
-    console.log("hello did mount", this.props);
     this.props.dispatch(fetchUserCategory());
   }
 
@@ -57,7 +49,7 @@ class AddExpense extends Component {
       }
 
       if (isIncomeClicked) {
-        dataForm = <IncomeForm category={incomeCategory}/>;
+        dataForm = <IncomeForm category={incomeCategory} />;
       }
       return (
         <div className="add-data">
@@ -73,9 +65,7 @@ class AddExpense extends Component {
         </div>
       );
     } else {
-      return (
-        <div>Loading...</div>
-      )
+      return <div>Loading...</div>;
     }
   }
 }
